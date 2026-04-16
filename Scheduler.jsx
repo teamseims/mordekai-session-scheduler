@@ -334,7 +334,7 @@ const Scheduler = () => {
   // ---------- Render ----------
   return (
     <div
-      className="min-h-screen text-amber-100"
+      className="h-screen overflow-hidden text-amber-100 flex flex-col"
       style={{
         background: 'radial-gradient(ellipse at top, #2a1810 0%, #1a0f08 50%, #0d0704 100%)',
         fontFamily: '"Cinzel", "Georgia", serif',
@@ -345,7 +345,7 @@ const Scheduler = () => {
         rel="stylesheet"
       />
 
-      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-4 sm:pt-6 flex flex-col h-full min-h-0">
         {storageError && (
           <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-500/50 bg-red-900/40 px-4 py-3 text-sm text-red-200">
             <span className="flex-1">{storageError}</span>
@@ -367,62 +367,67 @@ const Scheduler = () => {
         />
         <Tabs tab={tab} setTab={setTab} lockedSession={data.lockedSession} />
 
-        {tab === 'availability' && (
-          <AvailabilityView
-            monthGrid={monthGrid}
-            viewMonth={viewMonth}
-            setViewMonth={setViewMonth}
-            availability={data.availability}
-            me={me}
-            onCellClick={onCellClick}
-            todayIso={todayIso}
-            lockedSession={data.lockedSession}
-            askConfirm={askConfirm}
-            confirming={confirming}
-            monthsAhead={data.monthsAhead ?? 6}
-            setMonthsAhead={setMonthsAhead}
+        <div className="flex-1 min-h-0 overflow-y-auto pb-4 sm:pb-6">
+          {tab === 'availability' && (
+            <AvailabilityView
+              monthGrid={monthGrid}
+              viewMonth={viewMonth}
+              setViewMonth={setViewMonth}
+              availability={data.availability}
+              me={me}
+              onCellClick={onCellClick}
+              todayIso={todayIso}
+              lockedSession={data.lockedSession}
+              askConfirm={askConfirm}
+              confirming={confirming}
+              monthsAhead={data.monthsAhead ?? 6}
+              setMonthsAhead={setMonthsAhead}
+            />
+          )}
+          {tab === 'ranked' && (
+            <RankedView
+              ranked={rankedDates}
+              availability={data.availability}
+              lockedSession={data.lockedSession}
+              pendingLock={pendingLock}
+              setPendingLock={setPendingLock}
+              onLock={lockDate}
+              party={data.party}
+            />
+          )}
+          {tab === 'locked' && (
+            <LockedView
+              lockedSession={data.lockedSession}
+              availability={data.availability}
+              onUnlock={unlockDate}
+              askConfirm={askConfirm}
+              confirming={confirming}
+              party={data.party}
           />
-        )}
-        {tab === 'ranked' && (
-          <RankedView
-            ranked={rankedDates}
-            availability={data.availability}
-            lockedSession={data.lockedSession}
-            pendingLock={pendingLock}
-            setPendingLock={setPendingLock}
-            onLock={lockDate}
-            party={data.party}
-          />
-        )}
-        {tab === 'locked' && (
-          <LockedView
-            lockedSession={data.lockedSession}
-            availability={data.availability}
-            onUnlock={unlockDate}
-            askConfirm={askConfirm}
-            confirming={confirming}
-            party={data.party}
-          />
-        )}
+          )}
 
-        <div
-          className="mt-10 flex justify-center gap-4 text-xs"
-          style={{ color: 'rgba(217,119,6,0.35)' }}
-        >
-          <button onClick={exportData} className="underline hover:text-amber-400 transition-colors">
-            Export backup
-          </button>
-          <label className="underline hover:text-amber-400 transition-colors cursor-pointer">
-            Import backup
-            <input type="file" accept=".json" onChange={importData} className="hidden" />
-          </label>
-        </div>
+          <div
+            className="mt-10 flex justify-center gap-4 text-xs"
+            style={{ color: 'rgba(217,119,6,0.35)' }}
+          >
+            <button
+              onClick={exportData}
+              className="underline hover:text-amber-400 transition-colors"
+            >
+              Export backup
+            </button>
+            <label className="underline hover:text-amber-400 transition-colors cursor-pointer">
+              Import backup
+              <input type="file" accept=".json" onChange={importData} className="hidden" />
+            </label>
+          </div>
 
-        <div
-          className="mt-4 text-center text-xs text-amber-500/30 italic"
-          style={{ fontFamily: '"MedievalSharp", cursive' }}
-        >
-          By the will of the Spiral · Mordekai&apos;s Broken Seal
+          <div
+            className="mt-4 text-center text-xs text-amber-500/30 italic"
+            style={{ fontFamily: '"MedievalSharp", cursive' }}
+          >
+            By the will of the Spiral · Mordekai&apos;s Broken Seal
+          </div>
         </div>
       </div>
     </div>
