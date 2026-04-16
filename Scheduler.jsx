@@ -110,6 +110,7 @@ const statusColor = (status) => {
 const defaultData = () => ({
   availability: {},
   lockedSession: null,
+  monthsAhead: 6,
 });
 
 // ============================================================
@@ -161,8 +162,10 @@ const Scheduler = () => {
   }, [me, loaded]);
 
   const monthGrid = useMemo(() => generateMonthGrid(viewMonth.year, viewMonth.monthIdx), [viewMonth]);
-  const allFutureDates = useMemo(() => futureDateRange(6), []);
+  const allFutureDates = useMemo(() => futureDateRange(data.monthsAhead ?? 6), [data.monthsAhead]);
   const todayIso = toISO(today);
+
+  const setMonthsAhead = (n) => setData(prev => ({ ...prev, monthsAhead: n }));
 
   // ---------- Mutations ----------
   const setStatus = (iso, status) => {
@@ -257,6 +260,8 @@ const Scheduler = () => {
             lockedSession={data.lockedSession}
             askConfirm={askConfirm}
             confirming={confirming}
+            monthsAhead={data.monthsAhead ?? 6}
+            setMonthsAhead={setMonthsAhead}
           />
         )}
         {tab === 'ranked' && (
@@ -398,7 +403,7 @@ const Legend = ({ label, status }) => {
   );
 };
 
-const AvailabilityView = ({ monthGrid, viewMonth, setViewMonth, availability, me, onCellClick, todayIso, lockedSession, askConfirm, confirming }) => {
+const AvailabilityView = ({ monthGrid, viewMonth, setViewMonth, availability, me, onCellClick, todayIso, lockedSession, askConfirm, confirming, monthsAhead, setMonthsAhead }) => {
   const myAvail = availability?.[me] || {};
   const monthLabel = `${MONTH_FULL[viewMonth.monthIdx]} ${viewMonth.year}`;
   const todayDate = fromISO(todayIso);
@@ -509,13 +514,25 @@ const AvailabilityView = ({ monthGrid, viewMonth, setViewMonth, availability, me
         ))}
       </div>
 
-      <div className="mt-6 text-center">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => askConfirm('mine')}
           className="text-xs underline transition-colors"
           style={{ color: confirming === 'mine' ? '#ef4444' : 'rgba(217, 119, 6, 0.4)' }}>
           {confirming === 'mine' ? 'Tap again to confirm clearing your availability' : 'Clear my availability'}
         </button>
+        <label className="flex items-center gap-2 text-xs" style={{ color: 'rgba(217, 119, 6, 0.5)' }}>
+          Planning horizon:
+          <select
+            value={monthsAhead}
+            onChange={e => setMonthsAhead(Number(e.target.value))}
+            className="rounded px-1 py-0.5 text-amber-200"
+            style={{ background: 'rgba(45,31,18,0.8)', border: '1px solid #5a3a1a' }}>
+            {[1, 2, 3, 6, 9, 12].map(n => (
+              <option key={n} value={n}>{n} {n === 1 ? 'month' : 'months'}</option>
+            ))}
+          </select>
+        </label>
       </div>
     </div>
   );
