@@ -35,8 +35,9 @@ Claude artifacts.** This repo uses a `localStorage` shim instead
 (`src/storage.js`) so the app runs locally with no backend.
 
 **What this means in practice:**
+
 - Each player's votes live only on their own device/browser.
-- Players will *not* see each other's availability.
+- Players will _not_ see each other's availability.
 - Clearing browser storage wipes all data.
 
 **To make it actually shared across the party**, replace `src/storage.js`
