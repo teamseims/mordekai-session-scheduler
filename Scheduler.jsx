@@ -223,6 +223,36 @@ const Scheduler = () => {
     setData(prev => ({ ...prev, lockedSession: null }));
   };
 
+  const exportData = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mordekai-scheduler-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (typeof parsed !== 'object' || parsed === null || !parsed.availability) {
+          setStorageError('Import failed: file does not look like a valid scheduler backup.');
+          return;
+        }
+        setData({ ...defaultData(), ...parsed });
+      } catch {
+        setStorageError('Import failed: could not parse the selected file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const askConfirm = (action) => {
     if (confirming === action) {
       if (action === 'mine') {
@@ -299,7 +329,15 @@ const Scheduler = () => {
           />
         )}
 
-        <div className="mt-12 text-center text-xs text-amber-500/30 italic" style={{ fontFamily: '"MedievalSharp", cursive' }}>
+        <div className="mt-10 flex justify-center gap-4 text-xs" style={{ color: 'rgba(217,119,6,0.35)' }}>
+          <button onClick={exportData} className="underline hover:text-amber-400 transition-colors">Export backup</button>
+          <label className="underline hover:text-amber-400 transition-colors cursor-pointer">
+            Import backup
+            <input type="file" accept=".json" onChange={importData} className="hidden" />
+          </label>
+        </div>
+
+        <div className="mt-4 text-center text-xs text-amber-500/30 italic" style={{ fontFamily: '"MedievalSharp", cursive' }}>
           By the will of the Spiral · Mordekai's Broken Seal
         </div>
       </div>
