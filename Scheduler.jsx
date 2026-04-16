@@ -10,7 +10,7 @@ import { storage } from './storage.js';
 
 const STORAGE_KEY = 'wrencoria-scheduler-v1';
 const LOCAL_KEY = 'wrencoria-scheduler-me';
-const PARTY = ['BigTimeDM', 'King Gizzard', 'Lucien', 'Shio', 'Kazzak', 'Fazula'];
+const DEFAULT_PARTY = ['BigTimeDM', 'King Gizzard', 'Lucien', 'Shio', 'Kazzak', 'Fazula'];
 
 // ---------- Date helpers ----------
 const pad = (n) => String(n).padStart(2, '0');
@@ -89,9 +89,9 @@ const cycleStatus = (cur) => {
   return undefined;
 };
 
-const scoreFor = (availability, iso) => {
+const scoreFor = (party, availability, iso) => {
   let yes = 0, maybe = 0, no = 0;
-  for (const player of PARTY) {
+  for (const player of party) {
     const s = availability?.[player]?.[iso];
     if (s === 'yes') yes++;
     else if (s === 'maybe') maybe++;
@@ -111,6 +111,7 @@ const defaultData = () => ({
   availability: {},
   lockedSession: null,
   monthsAhead: 6,
+  party: DEFAULT_PARTY,
 });
 
 // ============================================================
@@ -118,7 +119,7 @@ const defaultData = () => ({
 // ============================================================
 const Scheduler = () => {
   const [data, setData] = useState(defaultData());
-  const [me, setMe] = useState(PARTY[0]);
+  const [me, setMe] = useState(DEFAULT_PARTY[0]);
   const [tab, setTab] = useState('availability');
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -131,16 +132,19 @@ const Scheduler = () => {
   // ---------- Load ----------
   useEffect(() => {
     (async () => {
+      let loadedParty = DEFAULT_PARTY;
       try {
         const res = await storage.get(STORAGE_KEY, true);
         if (res?.value) {
           const parsed = typeof res.value === 'string' ? JSON.parse(res.value) : res.value;
-          setData({ ...defaultData(), ...parsed });
+          const merged = { ...defaultData(), ...parsed };
+          if (Array.isArray(merged.party) && merged.party.length > 0) loadedParty = merged.party;
+          setData(merged);
         }
       } catch (e) { setStorageError('Failed to load session data. Your browser storage may be full or restricted.'); }
       try {
         const local = await storage.get(LOCAL_KEY, false);
-        if (local?.value && PARTY.includes(local.value)) setMe(local.value);
+        if (local?.value && loadedParty.includes(local.value)) setMe(local.value);
       } catch (e) { /* non-critical — default player selection is fine */ }
       setLoaded(true);
     })();
@@ -167,6 +171,15 @@ const Scheduler = () => {
 
   const setMonthsAhead = (n) => setData(prev => ({ ...prev, monthsAhead: n }));
 
+  const setParty = (updater) => {
+    setData(prev => {
+      const next = typeof updater === 'function' ? updater(prev.party) : updater;
+      const party = next.length > 0 ? next : prev.party;
+      if (!party.includes(me)) setMe(party[0]);
+      return { ...prev, party };
+    });
+  };
+
   // ---------- Mutations ----------
   const setStatus = (iso, status) => {
     setData(prev => {
@@ -187,7 +200,7 @@ const Scheduler = () => {
   const rankedDates = useMemo(() => {
     return allFutureDates
       .filter(iso => iso >= todayIso)
-      .map(iso => ({ iso, ...scoreFor(data.availability, iso) }))
+      .map(iso => ({ iso, ...scoreFor(data.party, data.availability, iso) }))
       .filter(r => r.voted > 0)
       .sort((a, b) => b.score - a.score || b.yes - a.yes || a.iso.localeCompare(b.iso));
   }, [data.availability, allFutureDates, todayIso]);
@@ -245,7 +258,7 @@ const Scheduler = () => {
           </div>
         )}
         <Header saving={saving} />
-        <PlayerPicker me={me} setMe={setMe} availability={data.availability} />
+        <PlayerPicker me={me} setMe={setMe} availability={data.availability} party={data.party} setParty={setParty} />
         <Tabs tab={tab} setTab={setTab} lockedSession={data.lockedSession} />
 
         {tab === 'availability' && (
@@ -272,6 +285,7 @@ const Scheduler = () => {
             pendingLock={pendingLock}
             setPendingLock={setPendingLock}
             onLock={lockDate}
+            party={data.party}
           />
         )}
         {tab === 'locked' && (
@@ -281,6 +295,7 @@ const Scheduler = () => {
             onUnlock={unlockDate}
             askConfirm={askConfirm}
             confirming={confirming}
+            party={data.party}
           />
         )}
 
@@ -320,40 +335,100 @@ const Header = ({ saving }) => (
   </div>
 );
 
-const PlayerPicker = ({ me, setMe, availability }) => (
-  <div className="mb-6 p-4 rounded-lg border-2" style={{
-    background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
-    borderColor: '#5a3a1a',
-    boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
-  }}>
-    <div className="flex flex-wrap items-center gap-3">
-      <span className="text-amber-300 font-semibold flex items-center gap-2">
-        <Users className="w-4 h-4" /> I am:
-      </span>
-      <div className="flex flex-wrap gap-2">
-        {PARTY.map(name => {
-          const active = name === me;
-          const count = Object.values(availability?.[name] || {}).filter(v => v === 'yes' || v === 'maybe').length;
-          return (
-            <button
-              key={name}
-              onClick={() => setMe(name)}
-              className="px-3 py-1.5 rounded border-2 transition-all text-sm"
-              style={{
-                background: active ? 'linear-gradient(135deg, #8b6914, #5c4410)' : 'rgba(0,0,0,0.3)',
-                borderColor: active ? '#d4af37' : '#5a3a1a',
-                color: active ? '#fef3c7' : '#d4a574',
-                fontWeight: active ? 700 : 400,
-                boxShadow: active ? '0 0 10px rgba(212,175,55,0.4)' : 'none',
-              }}>
-              {name} <span className="opacity-60 text-xs">({count})</span>
-            </button>
-          );
-        })}
+const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
+  const [editing, setEditing] = React.useState(false);
+  const [newName, setNewName] = React.useState('');
+
+  const addPlayer = () => {
+    const name = newName.trim();
+    if (!name || party.includes(name)) return;
+    setParty(p => [...p, name]);
+    setNewName('');
+  };
+
+  const removePlayer = (name) => {
+    if (party.length <= 1) return;
+    setParty(p => p.filter(n => n !== name));
+  };
+
+  return (
+    <div className="mb-6 p-4 rounded-lg border-2" style={{
+      background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
+      borderColor: '#5a3a1a',
+      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+    }}>
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-amber-300 font-semibold flex items-center gap-2">
+          <Users className="w-4 h-4" /> I am:
+        </span>
+        <div className="flex flex-wrap gap-2 flex-1">
+          {party.map(name => {
+            const active = name === me;
+            const count = Object.values(availability?.[name] || {}).filter(v => v === 'yes' || v === 'maybe').length;
+            return (
+              <button
+                key={name}
+                onClick={() => setMe(name)}
+                className="px-3 py-1.5 rounded border-2 transition-all text-sm"
+                style={{
+                  background: active ? 'linear-gradient(135deg, #8b6914, #5c4410)' : 'rgba(0,0,0,0.3)',
+                  borderColor: active ? '#d4af37' : '#5a3a1a',
+                  color: active ? '#fef3c7' : '#d4a574',
+                  fontWeight: active ? 700 : 400,
+                  boxShadow: active ? '0 0 10px rgba(212,175,55,0.4)' : 'none',
+                }}>
+                {name} <span className="opacity-60 text-xs">({count})</span>
+              </button>
+            );
+          })}
+        </div>
+        <button
+          onClick={() => setEditing(e => !e)}
+          className="text-xs px-2 py-1 rounded border transition-all"
+          style={{ borderColor: '#5a3a1a', color: editing ? '#d4af37' : '#a08060', background: editing ? 'rgba(212,175,55,0.1)' : 'transparent' }}>
+          {editing ? 'Done' : 'Edit Party'}
+        </button>
       </div>
+
+      {editing && (
+        <div className="mt-4 pt-4 border-t" style={{ borderColor: '#3a2510' }}>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {party.map(name => (
+              <div key={name} className="flex items-center gap-1 px-2 py-1 rounded border text-sm" style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.3)', color: '#d4a574' }}>
+                {name}
+                <button
+                  onClick={() => removePlayer(name)}
+                  disabled={party.length <= 1}
+                  className="ml-1 text-red-400/60 hover:text-red-400 disabled:opacity-20 leading-none"
+                  title="Remove player">
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addPlayer()}
+              placeholder="New player name…"
+              className="flex-1 px-3 py-1.5 rounded border text-sm text-amber-100 placeholder-amber-500/40 outline-none"
+              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#5a3a1a' }}
+            />
+            <button
+              onClick={addPlayer}
+              disabled={!newName.trim() || party.includes(newName.trim())}
+              className="px-3 py-1.5 rounded border text-sm transition-all disabled:opacity-30"
+              style={{ borderColor: '#8b6914', color: '#d4af37', background: 'rgba(139,105,20,0.2)' }}>
+              Add
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 const Tabs = ({ tab, setTab, lockedSession }) => {
   const tabs = [
@@ -538,7 +613,7 @@ const AvailabilityView = ({ monthGrid, viewMonth, setViewMonth, availability, me
   );
 };
 
-const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendingLock, onLock }) => {
+const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendingLock, onLock, party }) => {
   if (ranked.length === 0) {
     return (
       <div className="text-center py-12 text-amber-300/60 italic">
@@ -552,7 +627,7 @@ const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendi
   }
 
   const top = ranked.slice(0, 12);
-  const maxScore = PARTY.length * 2;
+  const maxScore = party.length * 2;
 
   return (
     <div className="space-y-3">
@@ -563,7 +638,7 @@ const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendi
         const isLocked = lockedSession?.date === r.iso;
         const isPending = pendingLock?.iso === r.iso;
         const pct = (r.score / maxScore) * 100;
-        const everyoneAvailable = r.yes === PARTY.length;
+        const everyoneAvailable = r.yes === party.length;
         return (
           <div key={r.iso} className="rounded-lg border-2 p-4" style={{
             background: idx === 0
@@ -589,7 +664,7 @@ const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendi
                   </div>
                   <div className="text-sm text-amber-300/70 mt-1">
                     Score: <span className="font-bold text-amber-300">{r.score}</span> / {maxScore}
-                    <span className="ml-2 opacity-60">({r.voted}/{PARTY.length} voted)</span>
+                    <span className="ml-2 opacity-60">({r.voted}/{party.length} voted)</span>
                     {everyoneAvailable && (
                       <span className="ml-2 text-green-400 font-bold">· Full party!</span>
                     )}
@@ -675,7 +750,7 @@ const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendi
 
             {/* Player chips */}
             <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
-              {PARTY.map(p => {
+              {party.map(p => {
                 const s = availability?.[p]?.[r.iso];
                 const c = statusColor(s);
                 const symbol = s === 'yes' ? '✓' : s === 'maybe' ? '?' : s === 'no' ? '✕' : '—';
@@ -698,7 +773,7 @@ const RankedView = ({ ranked, availability, lockedSession, pendingLock, setPendi
   );
 };
 
-const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirming }) => {
+const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirming, party }) => {
   if (!lockedSession) {
     return (
       <div className="text-center py-16 text-amber-300/60 italic">
@@ -751,7 +826,7 @@ const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirm
           The Party
         </div>
         <div className="space-y-2">
-          {PARTY.map(p => {
+          {party.map(p => {
             const s = availability?.[p]?.[lockedSession.date];
             const symbol = s === 'yes' ? '✓ Available' : s === 'maybe' ? '? Maybe' : s === 'no' ? '✕ Cannot attend' : '— No reply';
             const color = s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#5a3a1a';
