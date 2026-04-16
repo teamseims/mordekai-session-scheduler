@@ -334,7 +334,7 @@ const Scheduler = () => {
   // ---------- Render ----------
   return (
     <div
-      className="min-h-screen text-amber-100"
+      className="h-screen overflow-hidden text-amber-100 flex flex-col"
       style={{
         background: 'radial-gradient(ellipse at top, #2a1810 0%, #1a0f08 50%, #0d0704 100%)',
         fontFamily: '"Cinzel", "Georgia", serif',
@@ -345,7 +345,7 @@ const Scheduler = () => {
         rel="stylesheet"
       />
 
-      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-3 flex flex-col h-full min-h-0 overflow-hidden">
         {storageError && (
           <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-500/50 bg-red-900/40 px-4 py-3 text-sm text-red-200">
             <span className="flex-1">{storageError}</span>
@@ -367,46 +367,48 @@ const Scheduler = () => {
         />
         <Tabs tab={tab} setTab={setTab} lockedSession={data.lockedSession} />
 
-        {tab === 'availability' && (
-          <AvailabilityView
-            monthGrid={monthGrid}
-            viewMonth={viewMonth}
-            setViewMonth={setViewMonth}
-            availability={data.availability}
-            me={me}
-            onCellClick={onCellClick}
-            todayIso={todayIso}
-            lockedSession={data.lockedSession}
-            askConfirm={askConfirm}
-            confirming={confirming}
-            monthsAhead={data.monthsAhead ?? 6}
-            setMonthsAhead={setMonthsAhead}
-          />
-        )}
-        {tab === 'ranked' && (
-          <RankedView
-            ranked={rankedDates}
-            availability={data.availability}
-            lockedSession={data.lockedSession}
-            pendingLock={pendingLock}
-            setPendingLock={setPendingLock}
-            onLock={lockDate}
-            party={data.party}
-          />
-        )}
-        {tab === 'locked' && (
-          <LockedView
-            lockedSession={data.lockedSession}
-            availability={data.availability}
-            onUnlock={unlockDate}
-            askConfirm={askConfirm}
-            confirming={confirming}
-            party={data.party}
-          />
-        )}
+        <div className="flex-1 overflow-hidden">
+          {tab === 'availability' && (
+            <AvailabilityView
+              monthGrid={monthGrid}
+              viewMonth={viewMonth}
+              setViewMonth={setViewMonth}
+              availability={data.availability}
+              me={me}
+              onCellClick={onCellClick}
+              todayIso={todayIso}
+              lockedSession={data.lockedSession}
+              askConfirm={askConfirm}
+              confirming={confirming}
+              monthsAhead={data.monthsAhead ?? 6}
+              setMonthsAhead={setMonthsAhead}
+            />
+          )}
+          {tab === 'ranked' && (
+            <RankedView
+              ranked={rankedDates}
+              availability={data.availability}
+              lockedSession={data.lockedSession}
+              pendingLock={pendingLock}
+              setPendingLock={setPendingLock}
+              onLock={lockDate}
+              party={data.party}
+            />
+          )}
+          {tab === 'locked' && (
+            <LockedView
+              lockedSession={data.lockedSession}
+              availability={data.availability}
+              onUnlock={unlockDate}
+              askConfirm={askConfirm}
+              confirming={confirming}
+              party={data.party}
+            />
+          )}
+        </div>
 
         <div
-          className="mt-10 flex justify-center gap-4 text-xs"
+          className="py-2 flex justify-center gap-4 text-xs"
           style={{ color: 'rgba(217,119,6,0.35)' }}
         >
           <button onClick={exportData} className="underline hover:text-amber-400 transition-colors">
@@ -587,7 +589,7 @@ const Tabs = ({ tab, setTab, lockedSession }) => {
     { id: 'locked', label: 'Sealed Session', icon: lockedSession ? Lock : Unlock },
   ];
   return (
-    <div className="flex gap-1 mb-4 border-b-2 overflow-x-auto" style={{ borderColor: '#5a3a1a' }}>
+    <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#5a3a1a' }}>
       {tabs.map((t) => {
         const Icon = t.icon;
         const active = tab === t.id;
@@ -595,7 +597,7 @@ const Tabs = ({ tab, setTab, lockedSession }) => {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className="px-4 py-2 flex items-center gap-2 transition-all text-sm sm:text-base whitespace-nowrap"
+            className="px-3 py-1 flex items-center gap-1.5 transition-all text-xs whitespace-nowrap"
             style={{
               background: active ? 'linear-gradient(180deg, #3d2818, #2d1f12)' : 'transparent',
               borderTop: active ? '2px solid #d4af37' : '2px solid transparent',
@@ -607,11 +609,11 @@ const Tabs = ({ tab, setTab, lockedSession }) => {
               marginBottom: '-2px',
             }}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className="w-3 h-3" />
             {t.label}
             {t.id === 'locked' && lockedSession && (
               <span
-                className="w-2 h-2 rounded-full bg-amber-400"
+                className="w-1.5 h-1.5 rounded-full bg-amber-400"
                 style={{ boxShadow: '0 0 6px #d4af37' }}
               />
             )}
@@ -756,7 +758,7 @@ const AvailabilityView = ({
                   key={iso}
                   onClick={() => !disabled && onCellClick(iso)}
                   disabled={disabled}
-                  className="relative aspect-square rounded border-2 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
+                  className="relative h-10 sm:h-11 rounded border-2 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
                   style={{
                     background: colors.bg,
                     borderColor: isLocked ? '#d4af37' : isToday ? '#e0a82a' : colors.border,
