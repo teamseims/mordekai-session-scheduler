@@ -1047,7 +1047,7 @@ const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirm
     );
   }
 
-  const counts = scoreFor(availability, lockedSession.date);
+  const counts = scoreFor(party, availability, lockedSession.date);
   const lockedAt = new Date(lockedSession.lockedAt);
 
   return (
