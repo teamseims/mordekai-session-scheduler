@@ -121,6 +121,7 @@ const Scheduler = () => {
   const [tab, setTab] = useState('availability');
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [storageError, setStorageError] = useState(null);
   const [pendingLock, setPendingLock] = useState(null); // { iso, title }
   const [confirming, setConfirming] = useState(null); // 'mine' | 'all' | null
   const today = startOfToday();
@@ -135,11 +136,11 @@ const Scheduler = () => {
           const parsed = typeof res.value === 'string' ? JSON.parse(res.value) : res.value;
           setData({ ...defaultData(), ...parsed });
         }
-      } catch (e) { /* first run */ }
+      } catch (e) { setStorageError('Failed to load session data. Your browser storage may be full or restricted.'); }
       try {
         const local = await storage.get(LOCAL_KEY, false);
         if (local?.value && PARTY.includes(local.value)) setMe(local.value);
-      } catch (e) { /* first run */ }
+      } catch (e) { /* non-critical — default player selection is fine */ }
       setLoaded(true);
     })();
   }, []);
@@ -149,7 +150,7 @@ const Scheduler = () => {
     if (!loaded) return;
     setSaving(true);
     storage.set(STORAGE_KEY, JSON.stringify(data), true)
-      .catch(e => console.error('save failed', e))
+      .catch(() => setStorageError('Failed to save your changes. Your browser storage may be full or restricted.'))
       .finally(() => setTimeout(() => setSaving(false), 400));
   }, [data, loaded]);
 
@@ -234,6 +235,12 @@ const Scheduler = () => {
       <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet" />
 
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        {storageError && (
+          <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-500/50 bg-red-900/40 px-4 py-3 text-sm text-red-200">
+            <span className="flex-1">{storageError}</span>
+            <button onClick={() => setStorageError(null)} className="text-red-300 hover:text-red-100 leading-none text-lg">&times;</button>
+          </div>
+        )}
         <Header saving={saving} />
         <PlayerPicker me={me} setMe={setMe} availability={data.availability} />
         <Tabs tab={tab} setTab={setTab} lockedSession={data.lockedSession} />
