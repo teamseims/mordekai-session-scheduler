@@ -749,7 +749,7 @@ const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirm
       </div>
 
       <div className="text-xs text-amber-400/40 italic mb-6">
-        Sealed by {lockedSession.lockedBy} on {lockedAt.toLocaleDateString()}
+        Sealed by {lockedSession.lockedBy} on {lockedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
       </div>
 
       <button
