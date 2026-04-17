@@ -478,8 +478,8 @@ const Header = ({ saving, party, lockedSessions }) => (
       }}
     >
       <span>
-        {party.length} adventurers · {lockedSessions.length} sealed
-        {saving ? ' · scribing…' : ''}
+        {lockedSessions.length} session{lockedSessions.length !== 1 ? 's' : ''} recorded ·{' '}
+        {party.length} adventurer{party.length !== 1 ? 's' : ''} in the party
       </span>
     </div>
     <div
