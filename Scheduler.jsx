@@ -151,7 +151,7 @@ const statusColor = (status) => {
 
 const defaultData = () => ({
   availability: {},
-  lockedSession: null,
+  lockedSessions: [],
   monthsAhead: 6,
   party: DEFAULT_PARTY,
 });
@@ -184,6 +184,11 @@ const Scheduler = () => {
           const parsed = typeof res.value === 'string' ? JSON.parse(res.value) : res.value;
           const merged = { ...defaultData(), ...parsed };
           if (Array.isArray(merged.party) && merged.party.length > 0) loadedParty = merged.party;
+          // migrate legacy single lockedSession → lockedSessions array
+          if (merged.lockedSession && !Array.isArray(merged.lockedSessions)) {
+            merged.lockedSessions = [merged.lockedSession];
+          }
+          delete merged.lockedSession;
           setData(merged);
         }
       } catch (e) {
@@ -267,19 +272,20 @@ const Scheduler = () => {
   const lockDate = (iso, title) => {
     setData((prev) => ({
       ...prev,
-      lockedSession: {
-        date: iso,
-        title: title || '',
-        lockedAt: new Date().toISOString(),
-        lockedBy: me,
-      },
+      lockedSessions: [
+        ...(prev.lockedSessions || []),
+        { date: iso, title: title || '', lockedAt: new Date().toISOString(), lockedBy: me },
+      ],
     }));
     setPendingLock(null);
     setTab('locked');
   };
 
-  const unlockDate = () => {
-    setData((prev) => ({ ...prev, lockedSession: null }));
+  const unlockDate = (iso) => {
+    setData((prev) => ({
+      ...prev,
+      lockedSessions: (prev.lockedSessions || []).filter((s) => s.date !== iso),
+    }));
   };
 
   const exportData = () => {
@@ -365,7 +371,7 @@ const Scheduler = () => {
           party={data.party}
           setParty={setParty}
         />
-        <Tabs tab={tab} setTab={setTab} lockedSession={data.lockedSession} />
+        <Tabs tab={tab} setTab={setTab} lockedSessions={data.lockedSessions} />
 
         <div className="flex-1 overflow-hidden">
           {tab === 'availability' && (
@@ -377,7 +383,7 @@ const Scheduler = () => {
               me={me}
               onCellClick={onCellClick}
               todayIso={todayIso}
-              lockedSession={data.lockedSession}
+              lockedSessions={data.lockedSessions}
               askConfirm={askConfirm}
               confirming={confirming}
               monthsAhead={data.monthsAhead ?? 6}
@@ -388,7 +394,7 @@ const Scheduler = () => {
             <RankedView
               ranked={rankedDates}
               availability={data.availability}
-              lockedSession={data.lockedSession}
+              lockedSessions={data.lockedSessions}
               pendingLock={pendingLock}
               setPendingLock={setPendingLock}
               onLock={lockDate}
@@ -397,7 +403,7 @@ const Scheduler = () => {
           )}
           {tab === 'locked' && (
             <LockedView
-              lockedSession={data.lockedSession}
+              lockedSessions={data.lockedSessions}
               availability={data.availability}
               onUnlock={unlockDate}
               askConfirm={askConfirm}
@@ -582,11 +588,12 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
   );
 };
 
-const Tabs = ({ tab, setTab, lockedSession }) => {
+const Tabs = ({ tab, setTab, lockedSessions }) => {
+  const hasLocked = lockedSessions?.length > 0;
   const tabs = [
     { id: 'availability', label: 'My Availability', icon: Calendar },
     { id: 'ranked', label: 'Best Dates', icon: Trophy },
-    { id: 'locked', label: 'Sealed Session', icon: lockedSession ? Lock : Unlock },
+    { id: 'locked', label: 'Sealed Sessions', icon: hasLocked ? Lock : Unlock },
   ];
   return (
     <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#5a3a1a' }}>
@@ -611,7 +618,7 @@ const Tabs = ({ tab, setTab, lockedSession }) => {
           >
             <Icon className="w-3 h-3" />
             {t.label}
-            {t.id === 'locked' && lockedSession && (
+            {t.id === 'locked' && hasLocked && (
               <span
                 className="w-1.5 h-1.5 rounded-full bg-amber-400"
                 style={{ boxShadow: '0 0 6px #d4af37' }}
@@ -642,7 +649,7 @@ const AvailabilityView = ({
   me,
   onCellClick,
   todayIso,
-  lockedSession,
+  lockedSessions,
   askConfirm,
   confirming,
   monthsAhead,
@@ -740,7 +747,7 @@ const AvailabilityView = ({
               const colors = statusColor(status);
               const isPast = iso < todayIso;
               const isToday = iso === todayIso;
-              const isLocked = lockedSession?.date === iso;
+              const isLocked = lockedSessions?.some((s) => s.date === iso);
               const disabled = isPast || !inMonth;
 
               // Out-of-month cells are heavily faded so the month boundary is obvious
@@ -819,7 +826,7 @@ const AvailabilityView = ({
 const RankedView = ({
   ranked,
   availability,
-  lockedSession,
+  lockedSessions,
   pendingLock,
   setPendingLock,
   onLock,
@@ -851,7 +858,7 @@ const RankedView = ({
         Dates ranked by the gathering of wills · Available = 2 · Maybe = 1
       </div>
       {top.map((r, idx) => {
-        const isLocked = lockedSession?.date === r.iso;
+        const isLocked = lockedSessions?.some((s) => s.date === r.iso);
         const isPending = pendingLock?.iso === r.iso;
         const pct = (r.score / maxScore) * 100;
         const everyoneAvailable = r.yes === party.length;
@@ -1023,13 +1030,15 @@ const RankedView = ({
   );
 };
 
-const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirming, party }) => {
-  if (!lockedSession) {
+const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confirming, party }) => {
+  const [pendingBreak, setPendingBreak] = React.useState(null);
+
+  if (!lockedSessions?.length) {
     return (
       <div className="text-center py-16 text-amber-300/60 italic">
         <Unlock className="w-16 h-16 mx-auto mb-4 opacity-50" />
         <div className="text-lg" style={{ fontFamily: '"MedievalSharp", cursive' }}>
-          No session is sealed.
+          No sessions are sealed.
         </div>
         <div className="text-sm mt-2">Visit the Best Dates to choose a gathering.</div>
         <div className="mt-16">
@@ -1047,118 +1056,125 @@ const LockedView = ({ lockedSession, availability, onUnlock, askConfirm, confirm
     );
   }
 
-  const counts = scoreFor(party, availability, lockedSession.date);
-  const lockedAt = new Date(lockedSession.lockedAt);
-
   return (
-    <div className="text-center py-8">
-      <Sparkles
-        className="w-12 h-12 mx-auto mb-4 text-amber-400"
-        style={{ filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.6))' }}
-      />
-      <div
-        className="text-amber-300/60 text-xs uppercase tracking-widest mb-2"
-        style={{ fontFamily: '"Cinzel", serif' }}
-      >
-        The Next Gathering
-      </div>
-      <div
-        className="text-2xl sm:text-4xl font-bold mb-3"
-        style={{
-          fontFamily: '"Cinzel Decorative", serif',
-          color: '#d4af37',
-          textShadow: '0 0 20px rgba(212,175,55,0.4), 2px 2px 0 #000',
-        }}
-      >
-        {formatLong(lockedSession.date)}
-      </div>
-      {lockedSession.title && (
-        <div
-          className="text-lg sm:text-xl text-amber-200 italic mb-4"
-          style={{ fontFamily: '"MedievalSharp", cursive' }}
-        >
-          &quot;{lockedSession.title}&quot;
-        </div>
-      )}
-      <div className="text-amber-300/70 text-sm mb-6">
-        {counts.yes} available · {counts.maybe} maybe · {counts.no} cannot
-      </div>
-
-      <div
-        className="max-w-md mx-auto p-4 rounded-lg border-2 mb-6"
-        style={{
-          background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
-          borderColor: '#5a3a1a',
-          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
-        }}
-      >
-        <div
-          className="text-xs text-amber-400/60 uppercase tracking-wider mb-3"
+    <div>
+      <div className="flex items-center justify-center gap-2 mb-4">
+        <Sparkles
+          className="w-5 h-5 text-amber-400"
+          style={{ filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }}
+        />
+        <span
+          className="text-amber-300/70 text-xs uppercase tracking-widest"
           style={{ fontFamily: '"Cinzel", serif' }}
         >
-          The Party
-        </div>
-        <div className="space-y-2">
-          {party.map((p) => {
-            const s = availability?.[p]?.[lockedSession.date];
-            const symbol =
-              s === 'yes'
-                ? '✓ Available'
-                : s === 'maybe'
-                  ? '? Maybe'
-                  : s === 'no'
-                    ? '✕ Cannot attend'
-                    : '— No reply';
-            const color =
-              s === 'yes'
-                ? '#8fb050'
-                : s === 'maybe'
-                  ? '#e0a82a'
-                  : s === 'no'
-                    ? '#a8482e'
-                    : '#5a3a1a';
+          {lockedSessions.length} Sealed {lockedSessions.length === 1 ? 'Session' : 'Sessions'}
+        </span>
+        <Sparkles
+          className="w-5 h-5 text-amber-400"
+          style={{ filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }}
+        />
+      </div>
+
+      <div className="space-y-4">
+        {lockedSessions
+          .slice()
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .map((session) => {
+            const counts = scoreFor(party, availability, session.date);
+            const lockedAt = new Date(session.lockedAt);
+            const breaking = pendingBreak === session.date;
             return (
               <div
-                key={p}
-                className="flex justify-between items-center text-sm py-1 border-b"
-                style={{ borderColor: 'rgba(90, 58, 26, 0.4)' }}
+                key={session.date}
+                className="rounded-lg border-2 p-4"
+                style={{
+                  background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
+                  borderColor: '#8b6914',
+                  boxShadow: '0 0 12px rgba(212,175,55,0.15)',
+                }}
               >
-                <span className="text-amber-200 font-semibold">{p}</span>
-                <span style={{ color }} className="font-bold text-xs">
-                  {symbol}
-                </span>
+                <div
+                  className="text-lg sm:text-2xl font-bold mb-1"
+                  style={{
+                    fontFamily: '"Cinzel Decorative", serif',
+                    color: '#d4af37',
+                    textShadow: '1px 1px 0 #000',
+                  }}
+                >
+                  {formatLong(session.date)}
+                </div>
+                {session.title && (
+                  <div
+                    className="text-sm text-amber-200 italic mb-2"
+                    style={{ fontFamily: '"MedievalSharp", cursive' }}
+                  >
+                    &quot;{session.title}&quot;
+                  </div>
+                )}
+                <div className="text-amber-300/60 text-xs mb-3">
+                  {counts.yes} available · {counts.maybe} maybe · {counts.no} cannot
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {party.map((p) => {
+                    const s = availability?.[p]?.[session.date];
+                    const color =
+                      s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#5a3a1a';
+                    const label = s === 'yes' ? '✓' : s === 'maybe' ? '?' : s === 'no' ? '✕' : '—';
+                    return (
+                      <span
+                        key={p}
+                        className="text-xs px-2 py-0.5 rounded border"
+                        style={{ borderColor: color, color }}
+                      >
+                        {label} {p}
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-amber-400/40 italic">
+                    Sealed by {session.lockedBy} on{' '}
+                    {lockedAt.toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (breaking) {
+                        onUnlock(session.date);
+                        setPendingBreak(null);
+                      } else {
+                        setPendingBreak(session.date);
+                        setTimeout(() => setPendingBreak((c) => (c === session.date ? null : c)), 3000);
+                      }
+                    }}
+                    className="text-xs px-2 py-1 rounded border transition-all hover:scale-105"
+                    style={{
+                      borderColor: breaking ? '#ef4444' : '#8b3a2a',
+                      color: breaking ? '#ef4444' : '#fee2e2',
+                      background: breaking ? 'rgba(239,68,68,0.1)' : 'rgba(92,36,24,0.4)',
+                    }}
+                  >
+                    <Unlock className="w-3 h-3 inline mr-1" />
+                    {breaking ? 'Confirm break' : 'Break seal'}
+                  </button>
+                </div>
               </div>
             );
           })}
-        </div>
       </div>
 
-      <div className="text-xs text-amber-400/40 italic mb-6">
-        Sealed by {lockedSession.lockedBy} on{' '}
-        {lockedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-      </div>
-
-      <button
-        onClick={onUnlock}
-        className="px-4 py-2 rounded border-2 text-sm font-bold transition-all hover:scale-105"
-        style={{
-          background: 'linear-gradient(135deg, #5c2418, #3d1810)',
-          borderColor: '#8b3a2a',
-          color: '#fee2e2',
-        }}
-      >
-        <Unlock className="w-4 h-4 inline mr-1" /> Break the Seal
-      </button>
-
-      <div className="mt-12">
+      <div className="mt-8 text-center">
         <button
           onClick={() => askConfirm('all')}
           className="text-xs underline transition-colors"
           style={{ color: confirming === 'all' ? '#ef4444' : 'rgba(220, 38, 38, 0.3)' }}
         >
-          {confirming === 'all'
-            ? 'Tap again to wipe ALL data for the whole party'
-            : 'Reset all data'}
+          {confirming === 'all' ? 'Tap again to wipe ALL data for the whole party' : 'Reset all data'}
         </button>
       </div>
     </div>
