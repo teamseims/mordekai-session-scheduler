@@ -346,11 +346,6 @@ const Scheduler = () => {
         fontFamily: '"Cinzel", "Georgia", serif',
       }}
     >
-      <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap"
-        rel="stylesheet"
-      />
-
       <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-3 flex flex-col h-full min-h-0 overflow-hidden">
         {storageError && (
           <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-500/50 bg-red-900/40 px-4 py-3 text-sm text-red-200">
@@ -363,7 +358,7 @@ const Scheduler = () => {
             </button>
           </div>
         )}
-        <Header saving={saving} />
+        <Header saving={saving} party={data.party} lockedSessions={data.lockedSessions} />
         <PlayerPicker
           me={me}
           setMe={setMe}
@@ -441,32 +436,61 @@ const Scheduler = () => {
 // Sub-components
 // ============================================================
 
-const Header = ({ saving }) => (
-  <div className="text-center mb-6 relative">
-    <div className="flex items-center justify-center gap-3 mb-2">
-      <Crown className="w-7 h-7 text-amber-400" />
-      <h1
-        style={{
-          fontFamily: '"Cinzel Decorative", serif',
-          fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
-          color: '#d4af37',
-          textShadow: '0 0 12px rgba(212,175,55,0.3), 2px 2px 0 #000',
-          letterSpacing: '0.05em',
-        }}
-      >
-        The Council of Convening
-      </h1>
-      <Crown className="w-7 h-7 text-amber-400" />
-    </div>
-    <p
-      className="text-amber-200/70 italic text-sm"
-      style={{ fontFamily: '"MedievalSharp", cursive' }}
+const Header = ({ saving, party, lockedSessions }) => (
+  <div style={{ textAlign: 'center', padding: '24px 16px 14px', marginBottom: '4px' }}>
+    <div
+      style={{
+        fontFamily: "'Cinzel Decorative', cursive",
+        fontSize: '2.6rem',
+        fontWeight: 400,
+        color: '#c8a84e',
+        textShadow: '0 2px 14px rgba(200,168,78,0.35)',
+        letterSpacing: '5px',
+        textTransform: 'uppercase',
+        lineHeight: 1.1,
+        margin: 0,
+      }}
     >
-      Wherein the Heroes of Wrencoria Mark Their Days of Gathering
-    </p>
-    {saving && (
-      <div className="absolute top-0 right-0 text-xs text-amber-400/60 italic">scribing…</div>
-    )}
+      Mordekai&apos;s Broken Seal
+    </div>
+    <div
+      style={{
+        fontSize: '0.6rem',
+        color: '#8a7d65',
+        marginTop: '5px',
+        letterSpacing: '8px',
+        textTransform: 'uppercase',
+        fontFamily: "'MedievalSharp', cursive",
+      }}
+    >
+      Council of Convening
+    </div>
+    <div
+      style={{
+        fontSize: '0.68rem',
+        color: '#8a7d65',
+        marginTop: '5px',
+        fontStyle: 'italic',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0,
+      }}
+    >
+      <span>
+        {lockedSessions.length} session{lockedSessions.length !== 1 ? 's' : ''} recorded ·{' '}
+        {party.length} adventurer{party.length !== 1 ? 's' : ''} in the party
+      </span>
+    </div>
+    <div
+      style={{
+        height: '1px',
+        background:
+          'linear-gradient(to right, transparent, #8a7535 30%, #8a7535 70%, transparent)',
+        margin: '12px 0 0',
+        opacity: 0.7,
+      }}
+    />
   </div>
 );
 
