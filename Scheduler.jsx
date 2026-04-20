@@ -340,13 +340,19 @@ const Scheduler = () => {
   // ---------- Render ----------
   return (
     <div
-      className="h-screen overflow-hidden text-amber-100 flex flex-col"
+      className="h-dvh text-amber-100 flex flex-col"
       style={{
         background: 'radial-gradient(ellipse at top, #2a1810 0%, #1a0f08 50%, #0d0704 100%)',
         fontFamily: '"Cinzel", "Georgia", serif',
       }}
     >
-      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-3 flex flex-col h-full min-h-0 overflow-hidden">
+      <div
+        className="max-w-6xl w-full mx-auto px-3 sm:px-6 flex flex-col h-full min-h-0"
+        style={{
+          paddingTop: 'max(8px, env(safe-area-inset-top))',
+          paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
+        }}
+      >
         {storageError && (
           <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-500/50 bg-red-900/40 px-4 py-3 text-sm text-red-200">
             <span className="flex-1">{storageError}</span>
@@ -368,7 +374,7 @@ const Scheduler = () => {
         />
         <Tabs tab={tab} setTab={setTab} lockedSessions={data.lockedSessions} />
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ WebkitOverflowScrolling: 'touch' }}>
           {tab === 'availability' && (
             <AvailabilityView
               monthGrid={monthGrid}
@@ -437,15 +443,15 @@ const Scheduler = () => {
 // ============================================================
 
 const Header = ({ saving, party, lockedSessions }) => (
-  <div style={{ textAlign: 'center', padding: '24px 16px 14px', marginBottom: '4px' }}>
+  <div style={{ textAlign: 'center', padding: '10px 16px 8px', marginBottom: '2px' }}>
     <div
       style={{
         fontFamily: "'Cinzel Decorative', cursive",
-        fontSize: '2.6rem',
+        fontSize: 'clamp(1.15rem, 5.5vw, 2.6rem)',
         fontWeight: 400,
         color: '#c8a84e',
         textShadow: '0 2px 14px rgba(200,168,78,0.35)',
-        letterSpacing: '5px',
+        letterSpacing: 'clamp(2px, 1vw, 5px)',
         textTransform: 'uppercase',
         lineHeight: 1.1,
         margin: 0,
@@ -457,8 +463,8 @@ const Header = ({ saving, party, lockedSessions }) => (
       style={{
         fontSize: '0.6rem',
         color: '#8a7d65',
-        marginTop: '5px',
-        letterSpacing: '8px',
+        marginTop: '3px',
+        letterSpacing: '6px',
         textTransform: 'uppercase',
         fontFamily: "'MedievalSharp', cursive",
       }}
@@ -467,14 +473,13 @@ const Header = ({ saving, party, lockedSessions }) => (
     </div>
     <div
       style={{
-        fontSize: '0.68rem',
+        fontSize: '0.65rem',
         color: '#8a7d65',
-        marginTop: '5px',
+        marginTop: '3px',
         fontStyle: 'italic',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 0,
       }}
     >
       <span>
@@ -487,7 +492,7 @@ const Header = ({ saving, party, lockedSessions }) => (
         height: '1px',
         background:
           'linear-gradient(to right, transparent, #8a7535 30%, #8a7535 70%, transparent)',
-        margin: '12px 0 0',
+        margin: '6px 0 0',
         opacity: 0.7,
       }}
     />
@@ -512,7 +517,7 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
 
   return (
     <div
-      className="mb-6 p-4 rounded-lg border-2"
+      className="mb-2 sm:mb-4 p-3 rounded-lg border-2"
       style={{
         background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
         borderColor: '#5a3a1a',
@@ -591,7 +596,7 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
               onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
               placeholder="New player name…"
               className="flex-1 px-3 py-1.5 rounded border text-sm text-amber-100 placeholder-amber-500/40 outline-none"
-              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#5a3a1a' }}
+              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#5a3a1a', fontSize: '16px' }}
             />
             <button
               onClick={addPlayer}
@@ -615,9 +620,9 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
 const Tabs = ({ tab, setTab, lockedSessions }) => {
   const hasLocked = lockedSessions?.length > 0;
   const tabs = [
-    { id: 'availability', label: 'My Availability', icon: Calendar },
-    { id: 'ranked', label: 'Best Dates', icon: Trophy },
-    { id: 'locked', label: 'Sealed Sessions', icon: hasLocked ? Lock : Unlock },
+    { id: 'availability', label: 'My Availability', shortLabel: 'Avail.', icon: Calendar },
+    { id: 'ranked', label: 'Best Dates', shortLabel: 'Ranked', icon: Trophy },
+    { id: 'locked', label: 'Sealed Sessions', shortLabel: 'Sealed', icon: hasLocked ? Lock : Unlock },
   ];
   return (
     <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#5a3a1a' }}>
@@ -628,7 +633,7 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className="px-3 py-1 flex items-center gap-1.5 transition-all text-xs whitespace-nowrap"
+            className="flex-1 sm:flex-none px-2 sm:px-3 py-2 sm:py-1 flex items-center justify-center sm:justify-start gap-1.5 transition-all text-xs whitespace-nowrap"
             style={{
               background: active ? 'linear-gradient(180deg, #3d2818, #2d1f12)' : 'transparent',
               borderTop: active ? '2px solid #d4af37' : '2px solid transparent',
@@ -641,7 +646,8 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
             }}
           >
             <Icon className="w-3 h-3" />
-            {t.label}
+            <span className="hidden sm:inline">{t.label}</span>
+            <span className="sm:hidden">{t.shortLabel}</span>
             {t.id === 'locked' && hasLocked && (
               <span
                 className="w-1.5 h-1.5 rounded-full bg-amber-400"
@@ -693,9 +699,9 @@ const AvailabilityView = ({
 
   return (
     <div>
-      {/* Month header — large and unmistakable */}
+      {/* Month header — sticky so nav stays visible while scrolling */}
       <div
-        className="mb-4 flex items-center justify-between gap-3 p-3 rounded-lg border-2"
+        className="mb-3 flex items-center justify-between gap-3 p-2 sm:p-3 rounded-lg border-2 sticky top-0 z-10"
         style={{
           background: 'linear-gradient(135deg, #3d2818, #2d1f12)',
           borderColor: '#8b6914',
@@ -705,14 +711,14 @@ const AvailabilityView = ({
         <button
           onClick={goPrev}
           disabled={!canGoBack}
-          className="p-2 rounded border-2 disabled:opacity-20 transition-all hover:scale-105 disabled:hover:scale-100"
+          className="p-3 sm:p-2 rounded border-2 disabled:opacity-20 transition-all hover:scale-105 disabled:hover:scale-100"
           style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.4)', color: '#d4a574' }}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <div className="text-center flex-1">
           <div
-            className="text-xl sm:text-3xl font-bold"
+            className="text-lg sm:text-3xl font-bold"
             style={{
               fontFamily: '"Cinzel Decorative", serif',
               color: '#d4af37',
@@ -724,7 +730,7 @@ const AvailabilityView = ({
           </div>
           <button
             onClick={goToday}
-            className="text-xs uppercase tracking-wider mt-1 underline transition-colors"
+            className="text-xs uppercase tracking-wider mt-0.5 underline transition-colors"
             style={{ color: '#a08060', fontFamily: '"Cinzel", serif' }}
           >
             Return to this month
@@ -732,21 +738,21 @@ const AvailabilityView = ({
         </div>
         <button
           onClick={goNext}
-          className="p-2 rounded border-2 transition-all hover:scale-105"
+          className="p-3 sm:p-2 rounded border-2 transition-all hover:scale-105"
           style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.4)', color: '#d4a574' }}
         >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="mb-3 flex flex-wrap gap-3 items-center justify-center text-xs">
+      <div className="mb-2 flex flex-wrap gap-2 items-center justify-center text-xs">
         <Legend label="Available" status="yes" />
         <Legend label="Maybe" status="maybe" />
         <Legend label="Cannot" status="no" />
       </div>
 
       <div
-        className="text-amber-200/60 text-xs italic mb-3 text-center"
+        className="text-amber-200/60 text-xs italic mb-2 text-center"
         style={{ fontFamily: '"MedievalSharp", cursive' }}
       >
         Tap a day to mark it. Tap again to change. Four taps to clear.
@@ -789,7 +795,7 @@ const AvailabilityView = ({
                   key={iso}
                   onClick={() => !disabled && onCellClick(iso)}
                   disabled={disabled}
-                  className="relative h-10 sm:h-11 rounded border-2 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
+                  className="relative h-11 sm:h-14 rounded border-2 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
                   style={{
                     background: colors.bg,
                     borderColor: isLocked ? '#d4af37' : isToday ? '#e0a82a' : colors.border,
@@ -803,7 +809,7 @@ const AvailabilityView = ({
                     ...outOfMonthStyle,
                   }}
                 >
-                  <div className="text-base sm:text-xl font-bold">{date.getDate()}</div>
+                  <div className="text-sm sm:text-xl font-bold">{date.getDate()}</div>
                   {isLocked && (
                     <Lock className="absolute bottom-0.5 right-0.5 w-3 h-3 text-amber-300" />
                   )}
@@ -814,7 +820,7 @@ const AvailabilityView = ({
         ))}
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mt-4 pb-6 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => askConfirm('mine')}
           className="text-xs underline transition-colors"
@@ -874,7 +880,7 @@ const RankedView = ({
   const maxScore = party.length * 2;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pb-6">
       <div
         className="text-amber-200/70 text-sm italic mb-4 text-center"
         style={{ fontFamily: '"MedievalSharp", cursive' }}
@@ -978,6 +984,7 @@ const RankedView = ({
                     borderColor: '#5a3a1a',
                     color: '#fef3c7',
                     fontFamily: '"Cinzel", serif',
+                    fontSize: '16px',
                   }}
                   autoFocus
                 />
@@ -1192,7 +1199,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
           })}
       </div>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 pb-6 text-center">
         <button
           onClick={() => askConfirm('all')}
           className="text-xs underline transition-colors"
