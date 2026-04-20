@@ -146,7 +146,7 @@ const statusColor = (status) => {
     return { bg: 'linear-gradient(135deg, #c8941a, #8b6712)', border: '#e0a82a', text: '#fef9c3' };
   if (status === 'no')
     return { bg: 'linear-gradient(135deg, #8b3a2a, #5c2418)', border: '#a8482e', text: '#fee2e2' };
-  return { bg: 'rgba(22, 18, 8, 0.6)', border: '#3d3318', text: '#c4a860' };
+  return { bg: 'rgba(13, 11, 9, 0.8)', border: '#3a3020', text: '#c4a97d' };
 };
 
 const defaultData = () => ({
@@ -342,8 +342,8 @@ const Scheduler = () => {
     <div
       className="h-dvh text-amber-100 flex flex-col"
       style={{
-        background: 'radial-gradient(ellipse at top, #181409 0%, #0d0c07 60%, #090807 100%)',
-        fontFamily: '"Cinzel", "Georgia", serif',
+        background: '#1a1510',
+        fontFamily: '"Spectral", "Georgia", serif',
       }}
     >
       <div
@@ -416,7 +416,7 @@ const Scheduler = () => {
 
         <div
           className="py-2 flex justify-center gap-4 text-xs"
-          style={{ color: 'rgba(180,155,40,0.35)' }}
+          style={{ color: 'rgba(91, 74, 51, 0.8)' }}
         >
           <button onClick={exportData} className="underline hover:text-amber-400 transition-colors">
             Export backup
@@ -462,7 +462,7 @@ const Header = ({ saving, party, lockedSessions }) => (
     <div
       style={{
         fontSize: '0.6rem',
-        color: '#7a7555',
+        color: '#8a7d65',
         marginTop: '3px',
         letterSpacing: '6px',
         textTransform: 'uppercase',
@@ -474,7 +474,7 @@ const Header = ({ saving, party, lockedSessions }) => (
     <div
       style={{
         fontSize: '0.65rem',
-        color: '#7a7555',
+        color: '#8a7d65',
         marginTop: '3px',
         fontStyle: 'italic',
         display: 'flex',
@@ -491,7 +491,7 @@ const Header = ({ saving, party, lockedSessions }) => (
       style={{
         height: '1px',
         background:
-          'linear-gradient(to right, transparent, #6e6228 30%, #6e6228 70%, transparent)',
+          'linear-gradient(to right, transparent, #5c4a32 30%, #5c4a32 70%, transparent)',
         margin: '6px 0 0',
         opacity: 0.7,
       }}
@@ -519,8 +519,8 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
     <div
       className="mb-2 rounded-lg border-2"
       style={{
-        background: 'linear-gradient(135deg, #1c1809, #131009)',
-        borderColor: '#3d3318',
+        background: 'linear-gradient(135deg, #1e1810, #16120e)',
+        borderColor: '#3a3020',
         boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
       }}
     >
@@ -541,11 +541,11 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
                 onClick={() => setMe(name)}
                 className="px-2.5 py-1 rounded border-2 transition-all text-xs shrink-0"
                 style={{
-                  background: active ? 'linear-gradient(135deg, #7a6218, #4a3c0e)' : 'rgba(0,0,0,0.3)',
-                  borderColor: active ? '#d4af37' : '#3d3318',
-                  color: active ? '#fef3c7' : '#c4a860',
+                  background: active ? 'linear-gradient(135deg, #5c4a20, #3a2e0c)' : '#0d0b09',
+                  borderColor: active ? '#daa520' : '#3a3020',
+                  color: active ? '#fef3c7' : '#c4a97d',
                   fontWeight: active ? 700 : 400,
-                  boxShadow: active ? '0 0 8px rgba(212,175,55,0.35)' : 'none',
+                  boxShadow: active ? '0 0 8px rgba(218,165,32,0.35)' : 'none',
                 }}
               >
                 {name}
@@ -557,9 +557,9 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
           onClick={() => setEditing((e) => !e)}
           className="shrink-0 text-xs px-2 py-1 rounded border transition-all"
           style={{
-            borderColor: '#3d3318',
-            color: editing ? '#d4af37' : '#8a7a50',
-            background: editing ? 'rgba(212,175,55,0.1)' : 'transparent',
+            borderColor: '#3a3020',
+            color: editing ? '#daa520' : '#8b7355',
+            background: editing ? 'rgba(218,165,32,0.1)' : 'transparent',
           }}
         >
           {editing ? 'Done' : 'Edit'}
@@ -567,13 +567,13 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
       </div>
 
       {editing && (
-        <div className="px-3 pb-3 pt-1 border-t" style={{ borderColor: '#261e0c' }}>
+        <div className="px-3 pb-3 pt-1 border-t" style={{ borderColor: '#2a2018' }}>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {party.map((name) => (
               <div
                 key={name}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border text-xs"
-                style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.3)', color: '#c4a860' }}
+                style={{ borderColor: '#3a3020', background: '#0d0b09', color: '#c4a97d' }}
               >
                 {name}
                 <button
@@ -594,13 +594,13 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
               onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
               placeholder="New player name…"
               className="flex-1 px-3 py-1.5 rounded border text-xs text-amber-100 placeholder-amber-500/40 outline-none"
-              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#3d3318', fontSize: '16px' }}
+              style={{ background: '#16120c', borderColor: '#3a3020', fontSize: '16px' }}
             />
             <button
               onClick={addPlayer}
               disabled={!newName.trim() || party.includes(newName.trim())}
               className="px-3 py-1.5 rounded border text-xs transition-all disabled:opacity-30"
-              style={{ borderColor: '#7a6218', color: '#d4af37', background: 'rgba(139,105,20,0.2)' }}
+              style={{ borderColor: '#5c4a32', color: '#daa520', background: 'rgba(139,105,20,0.2)' }}
             >
               Add
             </button>
@@ -619,7 +619,7 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
     { id: 'locked', label: 'Sealed Sessions', shortLabel: 'Sealed', icon: hasLocked ? Lock : Unlock },
   ];
   return (
-    <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#3d3318' }}>
+    <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#3a3020' }}>
       {tabs.map((t) => {
         const Icon = t.icon;
         const active = tab === t.id;
@@ -629,12 +629,12 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
             onClick={() => setTab(t.id)}
             className="flex-1 sm:flex-none px-2 sm:px-3 py-2 sm:py-1 flex items-center justify-center sm:justify-start gap-1.5 transition-all text-xs whitespace-nowrap"
             style={{
-              background: active ? 'linear-gradient(180deg, #252010, #1c1809)' : 'transparent',
-              borderTop: active ? '2px solid #d4af37' : '2px solid transparent',
-              borderLeft: active ? '2px solid #3d3318' : '2px solid transparent',
-              borderRight: active ? '2px solid #3d3318' : '2px solid transparent',
+              background: active ? 'linear-gradient(180deg, #221a0e, #1e1810)' : 'transparent',
+              borderTop: active ? '2px solid #daa520' : '2px solid transparent',
+              borderLeft: active ? '2px solid #3a3020' : '2px solid transparent',
+              borderRight: active ? '2px solid #3a3020' : '2px solid transparent',
               borderRadius: '6px 6px 0 0',
-              color: active ? '#d4af37' : '#8a7a50',
+              color: active ? '#daa520' : '#8b7355',
               fontWeight: active ? 700 : 400,
               marginBottom: '-2px',
             }}
@@ -645,7 +645,7 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
             {t.id === 'locked' && hasLocked && (
               <span
                 className="w-1.5 h-1.5 rounded-full bg-amber-400"
-                style={{ boxShadow: '0 0 6px #d4af37' }}
+                style={{ boxShadow: '0 0 6px #daa520' }}
               />
             )}
           </button>
@@ -697,8 +697,8 @@ const AvailabilityView = ({
       <div
         className="mb-3 flex items-center justify-between gap-3 p-2 sm:p-3 rounded-lg border-2 sticky top-0 z-10"
         style={{
-          background: 'linear-gradient(135deg, #252010, #1c1809)',
-          borderColor: '#7a6218',
+          background: 'linear-gradient(135deg, #221a0e, #1e1810)',
+          borderColor: '#5c4a32',
           boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
         }}
       >
@@ -706,7 +706,7 @@ const AvailabilityView = ({
           onClick={goPrev}
           disabled={!canGoBack}
           className="p-3 sm:p-2 rounded border-2 disabled:opacity-20 transition-all hover:scale-105 disabled:hover:scale-100"
-          style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.4)', color: '#c4a860' }}
+          style={{ borderColor: '#3a3020', background: '#0d0b09', color: '#c4a97d' }}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -715,8 +715,8 @@ const AvailabilityView = ({
             className="text-lg sm:text-3xl font-bold"
             style={{
               fontFamily: '"Cinzel Decorative", serif',
-              color: '#d4af37',
-              textShadow: '0 0 10px rgba(212,175,55,0.4), 1px 1px 0 #000',
+              color: '#daa520',
+              textShadow: '0 0 10px rgba(218,165,32,0.4), 1px 1px 0 #000',
               letterSpacing: '0.05em',
             }}
           >
@@ -725,7 +725,7 @@ const AvailabilityView = ({
           <button
             onClick={goToday}
             className="text-xs uppercase tracking-wider mt-0.5 underline transition-colors"
-            style={{ color: '#8a7a50', fontFamily: '"Cinzel", serif' }}
+            style={{ color: '#8b7355', fontFamily: '"Cinzel", serif' }}
           >
             Return to this month
           </button>
@@ -733,7 +733,7 @@ const AvailabilityView = ({
         <button
           onClick={goNext}
           className="p-3 sm:p-2 rounded border-2 transition-all hover:scale-105"
-          style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.4)', color: '#c4a860' }}
+          style={{ borderColor: '#3a3020', background: '#0d0b09', color: '#c4a97d' }}
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -777,9 +777,9 @@ const AvailabilityView = ({
               // Out-of-month cells are heavily faded so the month boundary is obvious
               const outOfMonthStyle = !inMonth
                 ? {
-                    background: 'rgba(10, 9, 5, 0.4)',
-                    borderColor: 'rgba(60, 50, 20, 0.2)',
-                    color: 'rgba(196, 168, 90, 0.25)',
+                    background: 'rgba(13, 11, 9, 0.5)',
+                    borderColor: 'rgba(42, 32, 24, 0.3)',
+                    color: 'rgba(138, 125, 101, 0.3)',
                     opacity: 0.5,
                   }
                 : {};
@@ -792,10 +792,10 @@ const AvailabilityView = ({
                   className="relative h-11 sm:h-14 rounded border-2 transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
                   style={{
                     background: colors.bg,
-                    borderColor: isLocked ? '#d4af37' : isToday ? '#e0a82a' : colors.border,
+                    borderColor: isLocked ? '#daa520' : isToday ? '#e0a82a' : colors.border,
                     color: colors.text,
                     boxShadow: isLocked
-                      ? '0 0 12px rgba(212,175,55,0.6)'
+                      ? '0 0 12px rgba(218,165,32,0.6)'
                       : isToday
                         ? 'inset 0 0 8px rgba(224,168,42,0.4)'
                         : 'none',
@@ -818,7 +818,7 @@ const AvailabilityView = ({
         <button
           onClick={() => askConfirm('mine')}
           className="text-xs underline transition-colors"
-          style={{ color: confirming === 'mine' ? '#ef4444' : 'rgba(180, 155, 40, 0.4)' }}
+          style={{ color: confirming === 'mine' ? '#ef4444' : 'rgba(139, 115, 85, 0.8)' }}
         >
           {confirming === 'mine'
             ? 'Tap again to confirm clearing your availability'
@@ -826,14 +826,14 @@ const AvailabilityView = ({
         </button>
         <label
           className="flex items-center gap-2 text-xs"
-          style={{ color: 'rgba(180, 155, 40, 0.5)' }}
+          style={{ color: 'rgba(139, 115, 85, 0.9)' }}
         >
           Planning horizon:
           <select
             value={monthsAhead}
             onChange={(e) => setMonthsAhead(Number(e.target.value))}
             className="rounded px-1 py-0.5 text-amber-200"
-            style={{ background: 'rgba(22,18,8,0.8)', border: '1px solid #3d3318' }}
+            style={{ background: '#16120c', border: '1px solid #3a3020' }}
           >
             {[1, 2, 3, 6, 9, 12].map((n) => (
               <option key={n} value={n}>
@@ -893,17 +893,17 @@ const RankedView = ({
             style={{
               background:
                 idx === 0
-                  ? 'linear-gradient(135deg, #252010, #1c1809)'
-                  : 'linear-gradient(135deg, #1c1809, #131009)',
-              borderColor: idx === 0 ? '#d4af37' : '#3d3318',
-              boxShadow: idx === 0 ? '0 0 20px rgba(212,175,55,0.2)' : 'none',
+                  ? 'linear-gradient(135deg, #221a0e, #1e1810)'
+                  : 'linear-gradient(135deg, #1e1810, #16120e)',
+              borderColor: idx === 0 ? '#daa520' : '#3a3020',
+              boxShadow: idx === 0 ? '0 0 20px rgba(218,165,32,0.2)' : 'none',
             }}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div
                   style={{
-                    color: idx === 0 ? '#d4af37' : '#8a7a50',
+                    color: idx === 0 ? '#daa520' : '#8b7355',
                     fontFamily: '"Cinzel Decorative", serif',
                     fontSize: idx === 0 ? '1.75rem' : '1.25rem',
                     minWidth: '2.5rem',
@@ -935,8 +935,8 @@ const RankedView = ({
                   <span
                     className="px-3 py-1.5 rounded border-2 text-sm font-bold flex items-center gap-1"
                     style={{
-                      background: 'linear-gradient(135deg, #7a6218, #4a3c0e)',
-                      borderColor: '#d4af37',
+                      background: 'linear-gradient(135deg, #5c4a32, #3a2e0c)',
+                      borderColor: '#daa520',
                       color: '#fef3c7',
                     }}
                   >
@@ -974,8 +974,8 @@ const RankedView = ({
                   placeholder="e.g. Session 12 — Into the Dunes"
                   className="w-full px-3 py-2 rounded border-2 mb-3 text-sm"
                   style={{
-                    background: 'rgba(0,0,0,0.4)',
-                    borderColor: '#3d3318',
+                    background: '#16120c',
+                    borderColor: '#3a3020',
                     color: '#fef3c7',
                     fontFamily: '"Cinzel", serif',
                     fontSize: '16px',
@@ -998,9 +998,9 @@ const RankedView = ({
                     onClick={() => setPendingLock(null)}
                     className="px-3 py-1.5 rounded border-2 text-sm transition-all"
                     style={{
-                      background: 'rgba(0,0,0,0.3)',
-                      borderColor: '#3d3318',
-                      color: '#c4a860',
+                      background: '#0d0b09',
+                      borderColor: '#3a3020',
+                      color: '#c4a97d',
                     }}
                   >
                     Cancel
@@ -1012,7 +1012,7 @@ const RankedView = ({
             {/* Progress bar */}
             <div
               className="mt-3 h-2 rounded-full overflow-hidden"
-              style={{ background: 'rgba(0,0,0,0.4)' }}
+              style={{ background: '#0d0b09' }}
             >
               <div
                 className="h-full transition-all"
@@ -1020,7 +1020,7 @@ const RankedView = ({
                   width: `${pct}%`,
                   background:
                     idx === 0
-                      ? 'linear-gradient(90deg, #d4af37, #f0c850)'
+                      ? 'linear-gradient(90deg, #daa520, #f0c850)'
                       : 'linear-gradient(90deg, #6b8e3d, #8fb050)',
                 }}
               />
@@ -1086,7 +1086,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
       <div className="flex items-center justify-center gap-2 mb-4">
         <Sparkles
           className="w-5 h-5 text-amber-400"
-          style={{ filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }}
+          style={{ filter: 'drop-shadow(0 0 6px rgba(218,165,32,0.6))' }}
         />
         <span
           className="text-amber-300/70 text-xs uppercase tracking-widest"
@@ -1096,7 +1096,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
         </span>
         <Sparkles
           className="w-5 h-5 text-amber-400"
-          style={{ filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }}
+          style={{ filter: 'drop-shadow(0 0 6px rgba(218,165,32,0.6))' }}
         />
       </div>
 
@@ -1113,16 +1113,16 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
                 key={session.date}
                 className="rounded-lg border-2 p-4"
                 style={{
-                  background: 'linear-gradient(135deg, #1c1809, #131009)',
-                  borderColor: '#7a6218',
-                  boxShadow: '0 0 12px rgba(212,175,55,0.15)',
+                  background: 'linear-gradient(135deg, #1e1810, #16120e)',
+                  borderColor: '#5c4a32',
+                  boxShadow: '0 0 12px rgba(218,165,32,0.15)',
                 }}
               >
                 <div
                   className="text-lg sm:text-2xl font-bold mb-1"
                   style={{
                     fontFamily: '"Cinzel Decorative", serif',
-                    color: '#d4af37',
+                    color: '#daa520',
                     textShadow: '1px 1px 0 #000',
                   }}
                 >
@@ -1144,7 +1144,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
                   {party.map((p) => {
                     const s = availability?.[p]?.[session.date];
                     const color =
-                      s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#3d3318';
+                      s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#3a3020';
                     const label = s === 'yes' ? '✓' : s === 'maybe' ? '?' : s === 'no' ? '✕' : '—';
                     return (
                       <span
