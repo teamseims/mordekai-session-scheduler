@@ -443,15 +443,15 @@ const Scheduler = () => {
 // ============================================================
 
 const Header = ({ saving, party, lockedSessions }) => (
-  <div style={{ textAlign: 'center', padding: '10px 16px 8px', marginBottom: '2px' }}>
+  <div style={{ textAlign: 'center', padding: '24px 16px 14px', marginBottom: '4px' }}>
     <div
       style={{
         fontFamily: "'Cinzel Decorative', cursive",
-        fontSize: 'clamp(1rem, 4.8vw, 2.6rem)',
+        fontSize: 'clamp(1.15rem, 5.2vw, 2.6rem)',
         fontWeight: 400,
         color: '#c8a84e',
         textShadow: '0 2px 14px rgba(200,168,78,0.35)',
-        letterSpacing: 'clamp(1px, 0.5vw, 5px)',
+        letterSpacing: 'clamp(1.5px, 0.7vw, 5px)',
         textTransform: 'uppercase',
         lineHeight: 1.1,
         margin: 0,
@@ -463,8 +463,8 @@ const Header = ({ saving, party, lockedSessions }) => (
       style={{
         fontSize: '0.6rem',
         color: '#8a7d65',
-        marginTop: '3px',
-        letterSpacing: '6px',
+        marginTop: '5px',
+        letterSpacing: '8px',
         textTransform: 'uppercase',
         fontFamily: "'MedievalSharp', cursive",
       }}
@@ -473,26 +473,52 @@ const Header = ({ saving, party, lockedSessions }) => (
     </div>
     <div
       style={{
-        fontSize: '0.65rem',
+        fontSize: '0.68rem',
         color: '#8a7d65',
-        marginTop: '3px',
+        marginTop: '5px',
         fontStyle: 'italic',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 0,
       }}
     >
       <span>
         {lockedSessions.length} session{lockedSessions.length !== 1 ? 's' : ''} recorded ·{' '}
         {party.length} adventurer{party.length !== 1 ? 's' : ''} in the party
       </span>
+      <span
+        style={{
+          fontStyle: 'normal',
+          fontWeight: 600,
+          color: saving ? '#daa520' : '#4caf50',
+          letterSpacing: '2px',
+          marginLeft: '10px',
+          fontSize: '0.62rem',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+        }}
+      >
+        <span
+          style={{
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            display: 'inline-block',
+            background: saving ? '#daa520' : '#4caf50',
+            boxShadow: `0 0 4px ${saving ? '#daa520' : '#4caf50'}`,
+          }}
+        />
+        {saving ? 'Saving…' : 'Live'}
+      </span>
     </div>
     <div
       style={{
         height: '1px',
         background:
-          'linear-gradient(to right, transparent, #5c4a32 30%, #5c4a32 70%, transparent)',
-        margin: '6px 0 0',
+          'linear-gradient(to right, transparent, #8a7535 30%, #8a7535 70%, transparent)',
+        margin: '12px 0 0',
         opacity: 0.7,
       }}
     />
@@ -725,7 +751,7 @@ const AvailabilityView = ({
           <button
             onClick={goToday}
             className="text-xs uppercase tracking-wider mt-0.5 underline transition-colors"
-            style={{ color: '#8b7355', fontFamily: '"Cinzel", serif' }}
+            style={{ color: '#8b7355', fontFamily: '"Spectral", serif' }}
           >
             Return to this month
           </button>
@@ -915,7 +941,7 @@ const RankedView = ({
                 <div>
                   <div
                     className="text-base sm:text-lg font-bold text-amber-100"
-                    style={{ fontFamily: '"Cinzel", serif' }}
+                    style={{ fontFamily: '"Spectral", serif' }}
                   >
                     {formatLong(r.iso)}
                   </div>
@@ -977,7 +1003,7 @@ const RankedView = ({
                     background: '#16120c',
                     borderColor: '#3a3020',
                     color: '#fef3c7',
-                    fontFamily: '"Cinzel", serif',
+                    fontFamily: '"Spectral", serif',
                     fontSize: '16px',
                   }}
                   autoFocus
@@ -1090,7 +1116,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
         />
         <span
           className="text-amber-300/70 text-xs uppercase tracking-widest"
-          style={{ fontFamily: '"Cinzel", serif' }}
+          style={{ fontFamily: '"Spectral", serif' }}
         >
           {lockedSessions.length} Sealed {lockedSessions.length === 1 ? 'Session' : 'Sessions'}
         </span>
