@@ -447,11 +447,11 @@ const Header = ({ saving, party, lockedSessions }) => (
     <div
       style={{
         fontFamily: "'Cinzel Decorative', cursive",
-        fontSize: 'clamp(1.15rem, 5.5vw, 2.6rem)',
+        fontSize: 'clamp(1rem, 4.8vw, 2.6rem)',
         fontWeight: 400,
         color: '#c8a84e',
         textShadow: '0 2px 14px rgba(200,168,78,0.35)',
-        letterSpacing: 'clamp(2px, 1vw, 5px)',
+        letterSpacing: 'clamp(1px, 0.5vw, 5px)',
         textTransform: 'uppercase',
         lineHeight: 1.1,
         margin: 0,
@@ -517,71 +517,69 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
 
   return (
     <div
-      className="mb-2 sm:mb-4 p-3 rounded-lg border-2"
+      className="mb-2 rounded-lg border-2"
       style={{
         background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
         borderColor: '#5a3a1a',
         boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
       }}
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-amber-300 font-semibold flex items-center gap-2">
-          <Users className="w-4 h-4" /> I am:
+      {/* Single-row compact selector */}
+      <div className="flex items-center gap-2 px-3 py-2">
+        <span className="text-amber-300 text-xs font-semibold flex items-center gap-1 shrink-0">
+          <Users className="w-3 h-3" /> I am:
         </span>
-        <div className="flex flex-wrap gap-2 flex-1">
+        <div
+          className="flex gap-1.5 overflow-x-auto flex-1 py-0.5"
+          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {party.map((name) => {
             const active = name === me;
-            const count = Object.values(availability?.[name] || {}).filter(
-              (v) => v === 'yes' || v === 'maybe'
-            ).length;
             return (
               <button
                 key={name}
                 onClick={() => setMe(name)}
-                className="px-3 py-1.5 rounded border-2 transition-all text-sm"
+                className="px-2.5 py-1 rounded border-2 transition-all text-xs shrink-0"
                 style={{
-                  background: active
-                    ? 'linear-gradient(135deg, #8b6914, #5c4410)'
-                    : 'rgba(0,0,0,0.3)',
+                  background: active ? 'linear-gradient(135deg, #8b6914, #5c4410)' : 'rgba(0,0,0,0.3)',
                   borderColor: active ? '#d4af37' : '#5a3a1a',
                   color: active ? '#fef3c7' : '#d4a574',
                   fontWeight: active ? 700 : 400,
-                  boxShadow: active ? '0 0 10px rgba(212,175,55,0.4)' : 'none',
+                  boxShadow: active ? '0 0 8px rgba(212,175,55,0.35)' : 'none',
                 }}
               >
-                {name} <span className="opacity-60 text-xs">({count})</span>
+                {name}
               </button>
             );
           })}
         </div>
         <button
           onClick={() => setEditing((e) => !e)}
-          className="text-xs px-2 py-1 rounded border transition-all"
+          className="shrink-0 text-xs px-2 py-1 rounded border transition-all"
           style={{
             borderColor: '#5a3a1a',
             color: editing ? '#d4af37' : '#a08060',
             background: editing ? 'rgba(212,175,55,0.1)' : 'transparent',
           }}
         >
-          {editing ? 'Done' : 'Edit Party'}
+          {editing ? 'Done' : 'Edit'}
         </button>
       </div>
 
       {editing && (
-        <div className="mt-4 pt-4 border-t" style={{ borderColor: '#3a2510' }}>
-          <div className="flex flex-wrap gap-2 mb-3">
+        <div className="px-3 pb-3 pt-1 border-t" style={{ borderColor: '#3a2510' }}>
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {party.map((name) => (
               <div
                 key={name}
-                className="flex items-center gap-1 px-2 py-1 rounded border text-sm"
+                className="flex items-center gap-1 px-2 py-0.5 rounded border text-xs"
                 style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.3)', color: '#d4a574' }}
               >
                 {name}
                 <button
                   onClick={() => removePlayer(name)}
                   disabled={party.length <= 1}
-                  className="ml-1 text-red-400/60 hover:text-red-400 disabled:opacity-20 leading-none"
-                  title="Remove player"
+                  className="ml-0.5 text-red-400/60 hover:text-red-400 disabled:opacity-20 leading-none"
                 >
                   &times;
                 </button>
@@ -595,18 +593,14 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
               placeholder="New player name…"
-              className="flex-1 px-3 py-1.5 rounded border text-sm text-amber-100 placeholder-amber-500/40 outline-none"
+              className="flex-1 px-3 py-1.5 rounded border text-xs text-amber-100 placeholder-amber-500/40 outline-none"
               style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#5a3a1a', fontSize: '16px' }}
             />
             <button
               onClick={addPlayer}
               disabled={!newName.trim() || party.includes(newName.trim())}
-              className="px-3 py-1.5 rounded border text-sm transition-all disabled:opacity-30"
-              style={{
-                borderColor: '#8b6914',
-                color: '#d4af37',
-                background: 'rgba(139,105,20,0.2)',
-              }}
+              className="px-3 py-1.5 rounded border text-xs transition-all disabled:opacity-30"
+              style={{ borderColor: '#8b6914', color: '#d4af37', background: 'rgba(139,105,20,0.2)' }}
             >
               Add
             </button>
@@ -745,17 +739,17 @@ const AvailabilityView = ({
         </button>
       </div>
 
-      <div className="mb-2 flex flex-wrap gap-2 items-center justify-center text-xs">
+      {/* Legend + hint on a single compact row */}
+      <div className="mb-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs">
         <Legend label="Available" status="yes" />
         <Legend label="Maybe" status="maybe" />
         <Legend label="Cannot" status="no" />
-      </div>
-
-      <div
-        className="text-amber-200/60 text-xs italic mb-2 text-center"
-        style={{ fontFamily: '"MedievalSharp", cursive' }}
-      >
-        Tap a day to mark it. Tap again to change. Four taps to clear.
+        <span
+          className="text-amber-200/50 italic"
+          style={{ fontFamily: '"MedievalSharp", cursive' }}
+        >
+          Tap to cycle · four taps clears
+        </span>
       </div>
 
       <div className="space-y-1">
