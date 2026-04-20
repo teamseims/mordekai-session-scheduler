@@ -146,7 +146,7 @@ const statusColor = (status) => {
     return { bg: 'linear-gradient(135deg, #c8941a, #8b6712)', border: '#e0a82a', text: '#fef9c3' };
   if (status === 'no')
     return { bg: 'linear-gradient(135deg, #8b3a2a, #5c2418)', border: '#a8482e', text: '#fee2e2' };
-  return { bg: 'rgba(45, 31, 18, 0.6)', border: '#5a3a1a', text: '#d4a574' };
+  return { bg: 'rgba(22, 18, 8, 0.6)', border: '#3d3318', text: '#c4a860' };
 };
 
 const defaultData = () => ({
@@ -342,7 +342,7 @@ const Scheduler = () => {
     <div
       className="h-dvh text-amber-100 flex flex-col"
       style={{
-        background: 'radial-gradient(ellipse at top, #2a1810 0%, #1a0f08 50%, #0d0704 100%)',
+        background: 'radial-gradient(ellipse at top, #181409 0%, #0d0c07 60%, #090807 100%)',
         fontFamily: '"Cinzel", "Georgia", serif',
       }}
     >
@@ -416,7 +416,7 @@ const Scheduler = () => {
 
         <div
           className="py-2 flex justify-center gap-4 text-xs"
-          style={{ color: 'rgba(217,119,6,0.35)' }}
+          style={{ color: 'rgba(180,155,40,0.35)' }}
         >
           <button onClick={exportData} className="underline hover:text-amber-400 transition-colors">
             Export backup
@@ -462,7 +462,7 @@ const Header = ({ saving, party, lockedSessions }) => (
     <div
       style={{
         fontSize: '0.6rem',
-        color: '#8a7d65',
+        color: '#7a7555',
         marginTop: '3px',
         letterSpacing: '6px',
         textTransform: 'uppercase',
@@ -474,7 +474,7 @@ const Header = ({ saving, party, lockedSessions }) => (
     <div
       style={{
         fontSize: '0.65rem',
-        color: '#8a7d65',
+        color: '#7a7555',
         marginTop: '3px',
         fontStyle: 'italic',
         display: 'flex',
@@ -491,7 +491,7 @@ const Header = ({ saving, party, lockedSessions }) => (
       style={{
         height: '1px',
         background:
-          'linear-gradient(to right, transparent, #8a7535 30%, #8a7535 70%, transparent)',
+          'linear-gradient(to right, transparent, #6e6228 30%, #6e6228 70%, transparent)',
         margin: '6px 0 0',
         opacity: 0.7,
       }}
@@ -519,8 +519,8 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
     <div
       className="mb-2 rounded-lg border-2"
       style={{
-        background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
-        borderColor: '#5a3a1a',
+        background: 'linear-gradient(135deg, #1c1809, #131009)',
+        borderColor: '#3d3318',
         boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
       }}
     >
@@ -541,9 +541,9 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
                 onClick={() => setMe(name)}
                 className="px-2.5 py-1 rounded border-2 transition-all text-xs shrink-0"
                 style={{
-                  background: active ? 'linear-gradient(135deg, #8b6914, #5c4410)' : 'rgba(0,0,0,0.3)',
-                  borderColor: active ? '#d4af37' : '#5a3a1a',
-                  color: active ? '#fef3c7' : '#d4a574',
+                  background: active ? 'linear-gradient(135deg, #7a6218, #4a3c0e)' : 'rgba(0,0,0,0.3)',
+                  borderColor: active ? '#d4af37' : '#3d3318',
+                  color: active ? '#fef3c7' : '#c4a860',
                   fontWeight: active ? 700 : 400,
                   boxShadow: active ? '0 0 8px rgba(212,175,55,0.35)' : 'none',
                 }}
@@ -557,8 +557,8 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
           onClick={() => setEditing((e) => !e)}
           className="shrink-0 text-xs px-2 py-1 rounded border transition-all"
           style={{
-            borderColor: '#5a3a1a',
-            color: editing ? '#d4af37' : '#a08060',
+            borderColor: '#3d3318',
+            color: editing ? '#d4af37' : '#8a7a50',
             background: editing ? 'rgba(212,175,55,0.1)' : 'transparent',
           }}
         >
@@ -567,13 +567,13 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
       </div>
 
       {editing && (
-        <div className="px-3 pb-3 pt-1 border-t" style={{ borderColor: '#3a2510' }}>
+        <div className="px-3 pb-3 pt-1 border-t" style={{ borderColor: '#261e0c' }}>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {party.map((name) => (
               <div
                 key={name}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border text-xs"
-                style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.3)', color: '#d4a574' }}
+                style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.3)', color: '#c4a860' }}
               >
                 {name}
                 <button
@@ -594,13 +594,13 @@ const PlayerPicker = ({ me, setMe, availability, party, setParty }) => {
               onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
               placeholder="New player name…"
               className="flex-1 px-3 py-1.5 rounded border text-xs text-amber-100 placeholder-amber-500/40 outline-none"
-              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#5a3a1a', fontSize: '16px' }}
+              style={{ background: 'rgba(0,0,0,0.4)', borderColor: '#3d3318', fontSize: '16px' }}
             />
             <button
               onClick={addPlayer}
               disabled={!newName.trim() || party.includes(newName.trim())}
               className="px-3 py-1.5 rounded border text-xs transition-all disabled:opacity-30"
-              style={{ borderColor: '#8b6914', color: '#d4af37', background: 'rgba(139,105,20,0.2)' }}
+              style={{ borderColor: '#7a6218', color: '#d4af37', background: 'rgba(139,105,20,0.2)' }}
             >
               Add
             </button>
@@ -619,7 +619,7 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
     { id: 'locked', label: 'Sealed Sessions', shortLabel: 'Sealed', icon: hasLocked ? Lock : Unlock },
   ];
   return (
-    <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#5a3a1a' }}>
+    <div className="flex gap-1 mb-2 border-b-2" style={{ borderColor: '#3d3318' }}>
       {tabs.map((t) => {
         const Icon = t.icon;
         const active = tab === t.id;
@@ -629,12 +629,12 @@ const Tabs = ({ tab, setTab, lockedSessions }) => {
             onClick={() => setTab(t.id)}
             className="flex-1 sm:flex-none px-2 sm:px-3 py-2 sm:py-1 flex items-center justify-center sm:justify-start gap-1.5 transition-all text-xs whitespace-nowrap"
             style={{
-              background: active ? 'linear-gradient(180deg, #3d2818, #2d1f12)' : 'transparent',
+              background: active ? 'linear-gradient(180deg, #252010, #1c1809)' : 'transparent',
               borderTop: active ? '2px solid #d4af37' : '2px solid transparent',
-              borderLeft: active ? '2px solid #5a3a1a' : '2px solid transparent',
-              borderRight: active ? '2px solid #5a3a1a' : '2px solid transparent',
+              borderLeft: active ? '2px solid #3d3318' : '2px solid transparent',
+              borderRight: active ? '2px solid #3d3318' : '2px solid transparent',
               borderRadius: '6px 6px 0 0',
-              color: active ? '#d4af37' : '#a08060',
+              color: active ? '#d4af37' : '#8a7a50',
               fontWeight: active ? 700 : 400,
               marginBottom: '-2px',
             }}
@@ -697,8 +697,8 @@ const AvailabilityView = ({
       <div
         className="mb-3 flex items-center justify-between gap-3 p-2 sm:p-3 rounded-lg border-2 sticky top-0 z-10"
         style={{
-          background: 'linear-gradient(135deg, #3d2818, #2d1f12)',
-          borderColor: '#8b6914',
+          background: 'linear-gradient(135deg, #252010, #1c1809)',
+          borderColor: '#7a6218',
           boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
         }}
       >
@@ -706,7 +706,7 @@ const AvailabilityView = ({
           onClick={goPrev}
           disabled={!canGoBack}
           className="p-3 sm:p-2 rounded border-2 disabled:opacity-20 transition-all hover:scale-105 disabled:hover:scale-100"
-          style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.4)', color: '#d4a574' }}
+          style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.4)', color: '#c4a860' }}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -725,7 +725,7 @@ const AvailabilityView = ({
           <button
             onClick={goToday}
             className="text-xs uppercase tracking-wider mt-0.5 underline transition-colors"
-            style={{ color: '#a08060', fontFamily: '"Cinzel", serif' }}
+            style={{ color: '#8a7a50', fontFamily: '"Cinzel", serif' }}
           >
             Return to this month
           </button>
@@ -733,7 +733,7 @@ const AvailabilityView = ({
         <button
           onClick={goNext}
           className="p-3 sm:p-2 rounded border-2 transition-all hover:scale-105"
-          style={{ borderColor: '#5a3a1a', background: 'rgba(0,0,0,0.4)', color: '#d4a574' }}
+          style={{ borderColor: '#3d3318', background: 'rgba(0,0,0,0.4)', color: '#c4a860' }}
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -777,9 +777,9 @@ const AvailabilityView = ({
               // Out-of-month cells are heavily faded so the month boundary is obvious
               const outOfMonthStyle = !inMonth
                 ? {
-                    background: 'rgba(20, 12, 6, 0.4)',
-                    borderColor: 'rgba(90, 58, 26, 0.2)',
-                    color: 'rgba(212, 165, 116, 0.25)',
+                    background: 'rgba(10, 9, 5, 0.4)',
+                    borderColor: 'rgba(60, 50, 20, 0.2)',
+                    color: 'rgba(196, 168, 90, 0.25)',
                     opacity: 0.5,
                   }
                 : {};
@@ -818,7 +818,7 @@ const AvailabilityView = ({
         <button
           onClick={() => askConfirm('mine')}
           className="text-xs underline transition-colors"
-          style={{ color: confirming === 'mine' ? '#ef4444' : 'rgba(217, 119, 6, 0.4)' }}
+          style={{ color: confirming === 'mine' ? '#ef4444' : 'rgba(180, 155, 40, 0.4)' }}
         >
           {confirming === 'mine'
             ? 'Tap again to confirm clearing your availability'
@@ -826,14 +826,14 @@ const AvailabilityView = ({
         </button>
         <label
           className="flex items-center gap-2 text-xs"
-          style={{ color: 'rgba(217, 119, 6, 0.5)' }}
+          style={{ color: 'rgba(180, 155, 40, 0.5)' }}
         >
           Planning horizon:
           <select
             value={monthsAhead}
             onChange={(e) => setMonthsAhead(Number(e.target.value))}
             className="rounded px-1 py-0.5 text-amber-200"
-            style={{ background: 'rgba(45,31,18,0.8)', border: '1px solid #5a3a1a' }}
+            style={{ background: 'rgba(22,18,8,0.8)', border: '1px solid #3d3318' }}
           >
             {[1, 2, 3, 6, 9, 12].map((n) => (
               <option key={n} value={n}>
@@ -893,9 +893,9 @@ const RankedView = ({
             style={{
               background:
                 idx === 0
-                  ? 'linear-gradient(135deg, #3d2a14, #2d1f12)'
-                  : 'linear-gradient(135deg, #2d1f12, #1f1408)',
-              borderColor: idx === 0 ? '#d4af37' : '#5a3a1a',
+                  ? 'linear-gradient(135deg, #252010, #1c1809)'
+                  : 'linear-gradient(135deg, #1c1809, #131009)',
+              borderColor: idx === 0 ? '#d4af37' : '#3d3318',
               boxShadow: idx === 0 ? '0 0 20px rgba(212,175,55,0.2)' : 'none',
             }}
           >
@@ -903,7 +903,7 @@ const RankedView = ({
               <div className="flex items-center gap-3">
                 <div
                   style={{
-                    color: idx === 0 ? '#d4af37' : '#a08060',
+                    color: idx === 0 ? '#d4af37' : '#8a7a50',
                     fontFamily: '"Cinzel Decorative", serif',
                     fontSize: idx === 0 ? '1.75rem' : '1.25rem',
                     minWidth: '2.5rem',
@@ -935,7 +935,7 @@ const RankedView = ({
                   <span
                     className="px-3 py-1.5 rounded border-2 text-sm font-bold flex items-center gap-1"
                     style={{
-                      background: 'linear-gradient(135deg, #8b6914, #5c4410)',
+                      background: 'linear-gradient(135deg, #7a6218, #4a3c0e)',
                       borderColor: '#d4af37',
                       color: '#fef3c7',
                     }}
@@ -975,7 +975,7 @@ const RankedView = ({
                   className="w-full px-3 py-2 rounded border-2 mb-3 text-sm"
                   style={{
                     background: 'rgba(0,0,0,0.4)',
-                    borderColor: '#5a3a1a',
+                    borderColor: '#3d3318',
                     color: '#fef3c7',
                     fontFamily: '"Cinzel", serif',
                     fontSize: '16px',
@@ -999,8 +999,8 @@ const RankedView = ({
                     className="px-3 py-1.5 rounded border-2 text-sm transition-all"
                     style={{
                       background: 'rgba(0,0,0,0.3)',
-                      borderColor: '#5a3a1a',
-                      color: '#d4a574',
+                      borderColor: '#3d3318',
+                      color: '#c4a860',
                     }}
                   >
                     Cancel
@@ -1113,8 +1113,8 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
                 key={session.date}
                 className="rounded-lg border-2 p-4"
                 style={{
-                  background: 'linear-gradient(135deg, #2d1f12, #1f1408)',
-                  borderColor: '#8b6914',
+                  background: 'linear-gradient(135deg, #1c1809, #131009)',
+                  borderColor: '#7a6218',
                   boxShadow: '0 0 12px rgba(212,175,55,0.15)',
                 }}
               >
@@ -1144,7 +1144,7 @@ const LockedView = ({ lockedSessions, availability, onUnlock, askConfirm, confir
                   {party.map((p) => {
                     const s = availability?.[p]?.[session.date];
                     const color =
-                      s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#5a3a1a';
+                      s === 'yes' ? '#8fb050' : s === 'maybe' ? '#e0a82a' : s === 'no' ? '#a8482e' : '#3d3318';
                     const label = s === 'yes' ? '✓' : s === 'maybe' ? '?' : s === 'no' ? '✕' : '—';
                     return (
                       <span
